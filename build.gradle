@@ -14,7 +14,7 @@ buildscript {
 apply plugin: "uk.co.cacoethes.lazybones-templates"
 
 group = "org.softcake.${rootProject.name}"
-version = "1.0.0"
+version = "1.0.1"
 
 description = "The Lazybones Softcake Project"
 
