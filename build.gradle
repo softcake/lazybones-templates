@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+
+        maven {
+            url "http://dl.bintray.com/pledbrook/plugins"
+        }
+    }
+
+    dependencies {
+        classpath "uk.co.cacoethes:lazybones-gradle:1.2.4"
+    }
+}
+
+apply plugin: "uk.co.cacoethes.lazybones-templates"
+
+group = "org.softcake.${rootProject.name}"
+version = "1.0.0"
+
+description = "The Lazybones Softcake Project"
+
+lazybones {
+    repositoryName = "softcake/${rootProject.name}"
+
+    println("change mode")
+    fileMode "755", "gradlew", "**/*.sh, *.sh"
+
+    repositoryUsername = project.bintrayUser
+    repositoryApiKey = project.bintrayKey
+
+    licenses = ["Apache-2.0"]
+    vcsUrl = "https://github.com/${rootProject.name}"
+}

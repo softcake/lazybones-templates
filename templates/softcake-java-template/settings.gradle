@@ -1,0 +1,6 @@
+
+
+rootProject.name = "${projectName}"
+
+include "documentation"
+${module}
