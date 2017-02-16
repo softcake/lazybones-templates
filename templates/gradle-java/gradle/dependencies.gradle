@@ -67,7 +67,6 @@ ext {
             github_info         : '1.1.0',
             pom_plugin          :  '1.1.0',
             git                 : '1.6.0',
-            //release             : '1.1.5',
             versioning          : '2.6.0',
             semantic_release    : '1.2.0',
             degraph             : '0.1.4',

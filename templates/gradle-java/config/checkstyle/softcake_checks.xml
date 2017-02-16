@@ -2,7 +2,7 @@
 <!--
   ~ Copyright 2017 softcake.org.
   ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ Licensed under the Apache License, Version 2.0 (the "License").
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
@@ -23,7 +23,7 @@
         <property name="file" value="${basedir}/softcake_suppressions.xml"/>
         <property name="optional" value="false"/>
     </module>
-
+    <module name="SuppressWarningsFilter"/>
     <!--<property name="cacheFile" value="${checkstyle.cache.file}"/>-->
     <property name="severity" value="error"/>
     <property name="fileExtensions" value="java, properties, xml"/>
@@ -111,7 +111,6 @@
 
         <!-- Coding -->
         <!--<module name="ArrayTrailingComma"/>-->
-        <module name="AvoidInlineConditionals"/>
         <module name="CovariantEquals"/>
         <module name="DeclarationOrder"/>
         <module name="DefaultComesLast"/>
@@ -376,7 +375,7 @@
         </module>
 
         <module name="StaticVariableName">
-            <property name="format" value="^(id)|([x-z][0-9]*)|([a-z][a-z0-9][a-zA-Z0-9]+)$"/>
+            <property name="format" value="^[A-Z](_?[A-Z0-9]+)*$"/>
         </module>
         <module name="TypeName"/>
 
@@ -444,7 +443,7 @@
             <property name="tokens" value="DOT"/>
             <property name="allowLineBreaks" value="true"/>
         </module>
-        <module name="OperatorWrap"/>
+       <!-- <module name="OperatorWrap"/>
         <module name="OperatorWrap">
             <property name="tokens" value="ASSIGN"/>
             <property name="tokens" value="DIV_ASSIGN"/>
@@ -459,11 +458,11 @@
             <property name="tokens" value="BOR_ASSIGN"/>
             <property name="tokens" value="BAND_ASSIGN"/>
             <property name="option" value="eol"/>
-        </module>
+        </module>-->
         <module name="OperatorWrap">
             <property name="option" value="NL"/>
             <property name="tokens"
-                      value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF "/>
+                      value="BAND, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF "/>
         </module>
         <module name="ParenPad"/>
         <module name="SeparatorWrap">

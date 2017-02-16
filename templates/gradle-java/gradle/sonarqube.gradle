@@ -28,7 +28,7 @@ sonarqube.properties {
     property "sonar.links.ci", 'https://travis-ci.org/' + github.user + '/' + github.repository
     property "sonar.links.homepage", github.site
     property "sonar.branch", versioning.info.branch
-    property "sonar.scm.disabled", Boolean.FALSE
+    property "sonar.scm.disabled", Boolean.TRUE
     property "sonar.jacoco.reportMissing.force.zero", Boolean.TRUE
 
     if (project.isPullRequest && project.hasTravisSecEnv) {

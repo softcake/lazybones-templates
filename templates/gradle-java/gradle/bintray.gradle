@@ -26,7 +26,7 @@ bintray {
     user = project.bintrayUser
     key = project.bintrayKey
     dryRun = project.isSnapshot
-    publish = false
+    publish = true
     publications = ['nebula']
 
     pkg {
@@ -52,7 +52,7 @@ bintray {
             }
 
             mavenCentralSync {
-                sync = false
+                sync = project.mavenSync
                 def ossUser = project.sonatypeOssUsername
                 def ossPass = project.sonatypeOssPassword
                 user = ossUser

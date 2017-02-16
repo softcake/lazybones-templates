@@ -23,7 +23,7 @@ jacocoTestReport {
     sourceDirectories = project.files(sourceSets.main.allSource.srcDirs)
     classDirectories = project.files(sourceSets.main.allSource.srcDirs)
     reports {
-        xml.enabled = !(project in integTestModules) && !project.isCi
+        xml.enabled = !(project in integTestModules)
         csv.enabled = false
         html.enabled = !(project in integTestModules) && !project.isCi
     }
@@ -48,7 +48,7 @@ if (project in integTestModules) {
         dependsOn jacocoTestReport, jacocoMerge
         mustRunAfter jacocoTestReport
         reports {
-            xml.enabled = !project.isCi
+            xml.enabled = true
             csv.enabled = false
             html.enabled = !project.isCi
             html.destination = file("${reporting.baseDir}/jacoco/test/html")
@@ -58,10 +58,11 @@ if (project in integTestModules) {
         classDirectories = files(sourceSets.main.output)
     }
 
-    build.dependsOn jacocoMergedReport
+    check.finalizedBy jacocoMergedReport
 
 } else {
-    build.dependsOn jacocoTestReport
+
+    check.finalizedBy jacocoTestReport
 }
 
 

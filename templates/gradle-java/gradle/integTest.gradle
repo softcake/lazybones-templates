@@ -16,15 +16,6 @@
 
 apply plugin: "idea"
 
-sourceSets {
-    integTest {
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
-        java.srcDir file('src/integTest/java')
-        resources.srcDir file('src/integTest/resources')
-    }
-}
-
 dependencies {
     integTestCompile sourceSets.main.output
     integTestCompile sourceSets.test.output
@@ -35,6 +26,16 @@ dependencies {
 configurations {
     integTestCompile.extendsFrom testCompile
     integTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    integTest {
+        java.srcDir file('src/integTest/java')
+        resources.srcDir file('src/integTest/resources')
+        compileClasspath = sourceSets.main.classes + sourceSets.test.classes +
+                           configurations.integTestCompile
+        runtimeClasspath = classes + compileClasspath + configurations.integTestRuntime
+    }
 }
 
 idea {
@@ -51,7 +52,7 @@ task integTest(type: Test) {
     group = "verification"
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
-    outputs.upToDateWhen { false }
+    outputs.upToDateWhen {false}
     mustRunAfter test
 
 }
