@@ -1,0 +1,103 @@
+
+= {projectName}  - User Guide & Examples
+Rene Neubert - @softcake.org
+:revnumber: {project-version}
+
+link:api/index.html[API Docs]
+
+== Introduction
+
+
+=== Benefits of Project
+
+This project provides a collection of test tools for unit testing.
+
+=== Getting Started
+
+Include dependencies to build.gradle:
+[source,java,indent=0]
+[subs="attributes"]
+.build.gradle
+----
+apply plugin: 'java'
+
+dependencies {
+
+    testCompile "org.softcake.lemon:lemon-core:{revnumber}"
+
+}
+----
+
+
+== Test Tools
+
+
+=== Private Constructor Tester
+
+
+You need to test even private constructors of classes that must not be instantiated.
+
+For example you have such class with private constructor:
+
+
+
+
+.Demo class example
+[source,java]
+----
+include::{mainDir}/org/softcake/cucumber/documentation/example/Demo.java[tags=exampleDemo]
+----
+
+We need reflection to access the private Constructor.
+
+.Test with reflection
+[source,java,indent=0]
+----
+include::{testDir}/org/softcake/cucumber/documentation/example/DemoTest.java[tags=exampleReflection]
+----
+
+
+Solution to avoid this boilerplate:
+
+.PrivateConstructorTester
+[source,java,indent=0]
+----
+include::{testDir}/org/softcake/cucumber/documentation/example/DemoTest.java[tags=exampleLemon1]
+----
+
+To check nested classes, you must provide an Instance of enclosing class.
+See this example:
+
+.Nested class example
+[source,java,indent=0]
+----
+include::{mainDir}/org/softcake/cucumber/documentation/example/EnclosingClass.java[tags=exampleDemoEnclosing]
+----
+
+And the solution:
+
+.PrivateConstructorTester and TestUtils
+[source,java,indent=0]
+----
+include::{testDir}/org/softcake/cucumber/documentation/example/DemoTest.java[tags=exampleLemon2]
+----
+
+IMPORTANT: It is not possible to test nested classes, if constructor of the enclosing class throws an exception on instantiating!
+
+
+== Change Log
+
+include::{changelogDir}/changelog.md[]
+
+== About This Project
+
+
+=== Maintainers
+
+* https://github.com/softcake[Softcake Team]
+
+=== Contributors
+
+* https://github.com/ReneNeubert[Rene Neubert]
+
+
