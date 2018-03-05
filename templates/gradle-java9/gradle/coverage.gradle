@@ -33,7 +33,9 @@ afterEvaluate {
         executionData test
 
         reports {
-            html.enabled = true
+            xml.enabled true
+            xml.destination file("${buildDir}/reports/jacoco/report.xml")
+            html.enabled = false
             html.destination file("${buildDir}/reports/jacoco/test")
         }
     }
@@ -52,7 +54,9 @@ afterEvaluate {
             classDirectories = files(sourceSets.main.output)
 
             reports {
-                html.enabled = true
+                xml.enabled true
+                xml.destination file("${buildDir}/reports/jacoco/report.xml")
+                html.enabled = false
                 html.destination file("${buildDir}/reports/jacoco/integtest/html")
             }
         }

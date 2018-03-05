@@ -145,7 +145,7 @@ def getModules(List modules, boolean isPublished) {
     for (String item : modules) {
         String moduleName = isPublished ? "${props.projectName}-${item}" : "${item}"
         builder.append("include " + "\"${moduleName}\"\n")
-        createModule(item, isPublished)
+        createProjectModule(item, isPublished)
     }
     builder.toString()
 }

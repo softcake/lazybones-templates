@@ -137,7 +137,7 @@ allprojects {
 
 subprojects { subProject ->
 
-    if (subProject in publishedModules) {
+    if (subProject in projectModules) {
 
         // common dependencies
         dependencies {
@@ -157,7 +157,7 @@ subprojects { subProject ->
         jar.enabled = false
         javadoc.enabled = false
         uploadArchives.enabled = false
-
+        junitPlatformTest.enabled = false
     }
 
     if (subProject in documentationModule) {

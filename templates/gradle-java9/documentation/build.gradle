@@ -19,10 +19,11 @@ plugins {
 
 }
 
-description = "$rootProject.description documentation"
-javaModule.name = 'org.softcake.cucumber.documentation'
+description = "\$rootProject.description documentation"
+javaModule.name = "org.softcake.${projectName}.documentation"
 
 dependencies {
+
     implementation 'org.softcake.lemon:lemon-core:1.1.0'
     testImplementation 'org.softcake.lemon:lemon-core:1.1.0'
 }
@@ -31,8 +32,8 @@ apply plugin: "se.bjurr.gitchangelog.git-changelog-gradle-plugin"
 
 task gitChangelogTask(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
 
-    file = new File("$buildDir/changelog/changelog.md");
-    templateContent = file("$rootDir/documentation/content/templates/changelog.mustache").getText('UTF-8')
+    file = new File("\$buildDir/changelog/changelog.md")
+    templateContent = file("\$rootDir/documentation/content/templates/changelog.mustache").getText('UTF-8')
     toRef = "HEAD"
     dateFormat = "MM/dd/yyyy";
     timeZone = "UTC"
@@ -67,7 +68,7 @@ rootProject.afterEvaluate {
                 toc: 'left',
                 toclevels: 2,
                 'toc-title': 'Contents',
-                'projectName': rootProject.description,
+                'projectName': rootProject.description.minus("."),
                 imagesdir: 'images',
                 stylesheet: "stylesheets/riak.css"
 

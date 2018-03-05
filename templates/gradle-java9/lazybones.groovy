@@ -9,7 +9,6 @@ import static groovyx.net.http.ContentType.JSON
 
 AUTHOR = 'The softcake authors.'
 
-
 /**
  *  Prints the String with a --- surround ---
  *
@@ -148,7 +147,7 @@ def getModules(List modules, boolean isPublished) {
     for (String item : modules) {
         String moduleName = isPublished ? "${props.projectName}.${item}" : "${item}"
         builder.append("include " + "\"${moduleName}\"\n")
-        createModule(item, isPublished)
+        createProjectModule(item, isPublished)
     }
     builder.toString()
 }
@@ -165,14 +164,14 @@ def getPublishedModules(List modules) {
 
 
     for (i = 0; i < modules.size(); i++) {
-       String  item = modules.get(i)
+        String item = modules.get(i)
         String moduleName = "${props.projectName}.${item}"
         builder.append("\"${moduleName}\"")
 
-        if (i < modules.size() - 1){
+        if (i < modules.size() - 1) {
             builder.append(",\n")
         }
-
+        createReadmeForPublishedModules(new File(projectDir, "${moduleName}"), item)
     }
     builder.toString()
 
@@ -184,7 +183,7 @@ def getPublishedModules(List modules) {
  * @param shortModuleName
  * @param isPublished
  */
-def createModule(String shortModuleName, boolean isPublished) {
+def createProjectModule(String shortModuleName, boolean isPublished) {
 
     def moduleName = isPublished ? "${props.projectName}.${shortModuleName}" : shortModuleName
     def packagePath = "${props.packagePath}/${shortModuleName}"
@@ -193,12 +192,29 @@ def createModule(String shortModuleName, boolean isPublished) {
     packageDir.mkdirs()
     def testDir = new File(projectDir, "${moduleName}/src/test/java/" + packagePath)
     testDir.mkdirs()
-    createModuleInfo(mainDir,"${props.packageName}.${shortModuleName}")
+    createModuleInfo(mainDir, "${props.packageName}.${shortModuleName}")
     createPackageInfo(packageDir, "${props.packageName}.${shortModuleName}")
     createBuildGradle(new File(projectDir, moduleName), shortModuleName)
     createJavaClass(packageDir, "${props.packageName}.${shortModuleName}", shortModuleName)
 }
-
+/**
+ * Create the module directory's included build.gradle and package-info.java.
+ *
+ * @param shortModuleName
+ * @param isPublished
+ */
+def createDocModule() {
+    String moduleName = "documentation"
+    def packagePath = "${props.packagePath}/${moduleName}"
+    def mainDir = new File(projectDir, "${moduleName}/src/main/java/")
+    def packageDir = new File(projectDir, "${moduleName}/src/main/java/" + packagePath)
+    packageDir.mkdirs()
+    def testDir = new File(projectDir, "${moduleName}/src/test/java/" + packagePath)
+    testDir.mkdirs()
+    createModuleInfoForDoc(mainDir, "${props.packageName}.${moduleName}")
+    createPackageInfo(packageDir, "${props.packageName}.${moduleName}")
+    createJavaClassForDoc(packageDir, "${props.packageName}.${moduleName}", moduleName)
+}
 /**
  * Creates an package-info.java.
  *
@@ -206,7 +222,6 @@ def createModule(String shortModuleName, boolean isPublished) {
  * @param packageName
  */
 def createPackageInfo(File dir, String packageName) {
-
 
     writeToFile(dir, "package-info.java",
             "\n" +
@@ -224,6 +239,23 @@ def createPackageInfo(File dir, String packageName) {
  * @param dir
  * @param moduleName
  */
+def createModuleInfoForDoc(File dir, String moduleName) {
+
+    writeToFile(dir, "module-info.java",
+            "\n" +
+                    "module ${moduleName} {\n" +
+                    "\n" +
+                    "exports ${moduleName};\n" +
+                    "requires com.google.common;\n" +
+                    "}" +
+                    "\n")
+}
+/**
+ * Creates an module-info.java.
+ *
+ * @param dir
+ * @param moduleName
+ */
 def createModuleInfo(File dir, String moduleName) {
 
     writeToFile(dir, "module-info.java",
@@ -233,7 +265,6 @@ def createModuleInfo(File dir, String moduleName) {
                     "}" +
                     "\n")
 }
-
 /**
  * Creates a Java class.
  *
@@ -257,6 +288,41 @@ def createJavaClass(File dir, String packageName, String className) {
                     "}" +
                     "\n")
 }
+/**
+ * Creates a Java class.
+ *
+ * @param dir
+ * @param packageName
+ * @param className
+ */
+def createJavaClassForDoc(File dir, String packageName, String className) {
+
+    writeToFile(dir, "${className.capitalize()}.java",
+            "package ${packageName};\n" +
+                    "\n" +
+                    "// tag::exampleDemo[]\n" +
+                    "/**\n" +
+                    " * ${className.capitalize()} class.\n" +
+                    " *\n" +
+                    " * @author " + AUTHOR + "\n" +
+                    " */\n" +
+                    "public final class ${className.capitalize()} {\n" +
+                    "\n" +
+                    "    private ${className.capitalize()}() {\n" +
+                    "\n" +
+                    "        throw new IllegalStateException(\"No instances!\");\n" +
+                    "    }\n" +
+                    "\n" +
+                    "    public static void checkNotNull(final Object obj) {\n" +
+                    "\n" +
+                    "        if (obj == null) {\n" +
+                    "            throw new IllegalArgumentException(\"Parameter must not be null!\");\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "\n" +
+                    "}\n" +
+                    "// end::exampleDemo[]\n")
+}
 
 /**
  * Creates a build.gradle file in the given directory.
@@ -265,21 +331,46 @@ def createJavaClass(File dir, String packageName, String className) {
  * @param shortModuleName
  * @return
  */
-def createBuildGradle(File dir,  String shortModuleName) {
+def createBuildGradle(File dir, String shortModuleName) {
 
     String content = "plugins {\n" +
             "    id 'java-library'\n" +
             "}\n" +
             "\n" +
             "javaModule.name = \"${props.packageName}.${shortModuleName}\"  \n" +
-            "description = \" The ${shortModuleName.capitalize()} Module of the project\"\n" +
+            "description = \" The ${shortModuleName.capitalize()} module of the ${props.projectName.capitalize()} project.\"\n" +
             "\n" +
             "dependencies {\n" +
             "    //api project(':${props.projectName.toLowerCase()}.___')\n" +
             "    //implemetation project(':${props.projectName.toLowerCase()}.___')\n" +
-            "}"+
+            "}" +
             "\n"
     writeToFile(dir, "build.gradle", content)
+}
+
+/**
+ * Creates a Java class.
+ *
+ * @param dir
+ * @param packageName
+ * @param className
+ */
+def createReadmeForPublishedModules(File dir, String simpleModuleName) {
+    String moduleName = "${props.projectName}.${simpleModuleName}"
+    writeToFile(dir, "README.md",
+            "# The ${props.projectName} Project  - ${simpleModuleName.capitalize()} module. \n" +
+
+                    "[![Bintray](https://img.shields.io/bintray/v/softcake/${props.projectName}/${moduleName}.svg)](https://bintray.com/softcake/${props.projectName}/${moduleName})\n" +
+                    "[![Maven Central](https://img.shields.io/maven-central/v/${props.packageName}/${moduleName}.svg)](https://maven-badges.herokuapp.com/maven-central/${props.packageName}/${moduleName})\n" +
+                    "[![GitHub version](https://img.shields.io/github/tag/${props.githubUser}/${props.projectName}.svg)](https://github.com/${props.githubUser}/${props.projectName})\n" +
+                    "[![Travis](https://img.shields.io/travis/${props.githubUser}/${props.projectName}.svg)](https://travis-ci.org/${props.githubUser}/${props.projectName})\n" +
+                    "[![Codecov](https://img.shields.io/codecov/c/github/${props.githubUser}/${props.projectName}.svg)](https://codecov.io/gh/${props.githubUser}/${props.projectName})\n" +
+                    "[![Quality Gate](https://sonar.aldeso.com/api/badges/gate?key=${props.packageName}:master)](https://sonar.aldeso.com/dashboard/index/${props.packageName}:master)\n" +
+                    "[![Quality Gate](https://sonar.aldeso.com/api/badges/measure?key=${props.packageName}:master&metric=bugs&blinking=true )](https://sonar.aldeso.com/dashboard/index/${props.packageName}:master)\n" +
+                    "[![SonarQube Tech Debt](https://img.shields.io/sonar/https/sonar.aldeso.com/${props.packageName}:master/tech_debt.svg)](https://sonar.aldeso.com/dashboard/index/${props.packageName}:master)\n" +
+                    "[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)\n" +
+                    "\n" +
+                    "#### [Documentation](https://softcake.github.io/${props.projectName}/ \"${props.projectName} Documentation\")\n")
 }
 
 /**
@@ -524,7 +615,7 @@ strongEcho("Processing input")
 strongEcho("Project Properties")
 props.group = "org.softcake"
 props.projectName = projectDir.getName().toLowerCase()
-props.description = ask("Define value for 'description' [The ${props.projectName.capitalize()} Project.]: ",
+props.description = ask("Define value for 'description' [The ${props.projectName.capitalize()} Project]: ",
         "The ${props.projectName.capitalize()} Project.", "description")
 props.packageName = getPackageName("org.softcake.${props.projectName}")
 props.packagePath = props.packageName.replaceAll("[\\W]+|[_]+", "/")
@@ -567,7 +658,7 @@ strongEcho("1. Create first project module")
 String mod = ask("Define the prefix name of first project module " +
         "[${props.projectName}.<prefix>]: ", "").toLowerCase()
 
-if (mod.equals("")){
+if (mod.equals("")) {
     throw new IllegalArgumentException("The prefix Can not be empty!")
 }
 projectModules.add("${mod}")
@@ -583,7 +674,7 @@ while (true) {
 
     def module = ask("Define the prefix name of other project module " +
             "[${props.projectName}.<prefix>]: ", "").toLowerCase()
-    if (module.equals("")){
+    if (module.equals("")) {
         throw new IllegalArgumentException("The prefix can not be empty!")
     }
 
@@ -593,7 +684,7 @@ while (true) {
 
 strongEcho("2.1 Define project modules as published or not.")
 
-for(String item : projectModules){
+for (String item : projectModules) {
     def createModule = askBoolean("Should project module <${props.projectName}.${item}> published? " +
             "[yes]: ", "yes")
 
@@ -623,14 +714,16 @@ removeFileExtension(projectDir.getAbsolutePath(), ".gitattributes.txt")
 removeFileExtension(projectDir.getAbsolutePath(), ".gitignore.txt")
 
 
-
+createDocModule()
 props.module = getModules(projectModules, true)
 props.module += getModules(nonProjectModules, false)
 props.pubmod = getPublishedModules(publishedModules)
+
 processTemplates("build.gradle", props)
 processTemplates("settings.gradle", props)
 processTemplates("README.md", props)
-
+processTemplates("documentation/content/index.adoc", props)
+processTemplates("documentation/build.gradle", props)
 createGitRepository()
 
 if (props.useGithub) {
